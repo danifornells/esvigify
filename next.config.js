@@ -5,7 +5,7 @@ module.exports = {
                 // These rewrites are checked after headers/redirects
                 // and before all files including _next/public files which
                 // allows overriding page files
-                { source: '/get-my.svg', destination: '/api/text-to-svg' }
+                { source: '/render.svg', destination: '/api/text-to-svg' }
             ],
             afterFiles: [
                 // These rewrites are checked after pages/public files
