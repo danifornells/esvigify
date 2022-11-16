@@ -4,9 +4,12 @@
     "dev": "next",
     "build": "next build",
     "export": "next export",
-    "start": "next start"
+    "start": "next start",
+    "download-fonts": "node helpers/download-font-list.mjs",
+    "postinstall": "npm run download-fonts"
   },
   "dependencies": {
+    "dotenv": "^16.0.3",
     "download": "^8.0.0",
     "got": "^12.5.2",
     "next": "13.0.3",
