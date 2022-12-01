@@ -1,10 +1,8 @@
 import { tmpdir } from "os"
-import { readFile, writeFile } from 'node:fs/promises'
 import TextToSVG from "text-to-svg/index.js"
 import { optimize } from "svgo/lib/svgo.js"
+import fontList from "../../data/font-list.js"
 import download from "download"
-
-const FONT_LIST_FILE = `${tmpdir()}/font-list.json`
 
 export default async function handler(req, res) {
     const { text, font, style, color, size } = {
@@ -13,14 +11,6 @@ export default async function handler(req, res) {
         style: 'regular',
         size: 72,
         ...req.query
-    }
-
-    // Get font list from disk
-    let fontList
-    try {
-        fontList = await readFile(FONT_LIST_FILE).then(d => JSON.parse(d))
-    } catch (e) {
-        return res.status(503).json({ message: `No font list available` })
     }
 
     // Get matching font from a font list
@@ -62,7 +52,6 @@ export default async function handler(req, res) {
             const fontFilePath = `${tmpdir()}/${fontFileName}`
             matchingFile.downloaded = true
             matchingFile.path = fontFilePath
-            await writeFile(FONT_LIST_FILE, JSON.stringify(fontList))
             console.log(`Downloaded '${matchingFont.family}' in '${matchingVariant}' to ${fontFilePath}`)
         } catch (e) {
             return res.status(400).json({ message: `Cannot download font file` })
@@ -71,7 +60,7 @@ export default async function handler(req, res) {
 
     // Render and return the SVG
     try {
-        const svg = renderSvg(text, matchingFile.path, color, {fontSize: parseInt(size)})
+        const svg = renderSvg(decodeURI(text), matchingFile.path, color, {fontSize: parseInt(size)})
         res.setHeader('Content-Type', 'image/svg+xml')
         res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=3900')
         return res.status(200).end(svg)

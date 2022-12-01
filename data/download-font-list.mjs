@@ -1,14 +1,10 @@
 import { writeFile } from 'node:fs/promises'
-import { tmpdir } from 'os'
 import * as dotenv from 'dotenv'
 import got from 'got'
 dotenv.config()
 
 const { GOOGLE_FONTS_API_KEY } = process.env
-const FONT_LIST_FILES = [
-    'data/font-list.json',
-    `${tmpdir()}/font-list.json`
-]
+const FONT_LIST_FILE = './data/font-list.js'
 
 async function run() {
     try {
@@ -23,9 +19,9 @@ async function run() {
                 downloaded: false
             }))
         }))
-        // await writeFile(FONT_LIST_FILES[0], JSON.stringify(fontList))
-        await writeFile(FONT_LIST_FILES[1], JSON.stringify(fontList))
-        console.log('Font list downloaded to ' + FONT_LIST_FILES[0])
+
+        await writeFile(FONT_LIST_FILE, `module.exports = ${JSON.stringify(fontList)}`)
+        console.log('Font list downloaded to ' + FONT_LIST_FILE)
     } catch (error) {
         console.error(error)
         process.exitCode = 1
