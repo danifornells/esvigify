@@ -62,6 +62,15 @@ export default async function handler(req, res) {
     try {
         const svg = renderSvg(decodeURI(text), matchingFile.path, color, {fontSize: parseInt(size)})
         res.setHeader('Content-Type', 'image/svg+xml')
+        res.setHeader(
+            "Cache-Control",
+            [
+                `max-age=3600`,
+                `s-maxage=28800`,
+                'stale-while-revalidate'
+            ].join(', ')
+        );
+        res.setHeader("Access-Control-Allow-Origin", "*");
         res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=3900')
         return res.status(200).end(svg)
     } catch (e) {
